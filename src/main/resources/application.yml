@@ -1,0 +1,52 @@
+# \u7AEF\u53E3\u53F7
+server:
+  port: 8080
+spring:
+  profiles:
+    active: dev
+
+  devtools:
+    restart:
+      # 需要实时更新的目录
+      additional-paths: resources/**, static/**, templates/**
+
+
+  # \u6570\u636E\u6E90
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # serverTimezone=CTT, \u4E0D\u7136\u4F1A\u56E0\u4E3A\u65F6\u533A\u95EE\u9898\u62A5\u9519\uFF0C\u8FD9\u91CC\u7528\u4E86CTT\u4E2D\u56FD\u53F0\u6E7E\u65F6\u533A\u907F\u514D\u4EA7\u751F8\u5C0F\u65F6\u65F6\u5DEE
+    url: jdbc:mysql://182.92.106.69:3306/admin?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=CTT&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    platform: mysql
+    # \u8FDE\u63A5\u6C60\u6307\u5B9A springboot \u9ED8\u8BA4\u6307\u5B9A HikariCP, \u6B64\u5904\u66FF\u6362\u4E3A Druid
+    type: com.alibaba.druid.pool.DruidDataSource
+    # \u521D\u59CB\u5316\u5927\u5C0F, \u6700\u5927, \u6700\u5C0F
+    initialSize: 1
+    minIdle: 3
+    maxActive: 20
+    # \u914D\u7F6E\u83B7\u53D6\u8FDE\u63A5\u7B49\u5F85\u8D85\u65F6\u7684\u65F6\u95F4
+    maxWait: 60000
+    # \u914D\u7F6E\u95F4\u9694\u591A\u4E45\u624D\u8FDB\u884C\u4E00\u6B21\u68C0\u6D4B, \u68C0\u6D4B\u9700\u8981\u5173\u95ED\u7684\u7A7A\u95F2\u8FDE\u63A5, \u5355\u4F4D\u662F\u6BEB\u79D2
+    timeBetweenEvictionRunsMillis: 60000
+    # \u914D\u7F6E\u4E00\u4E2A\u8FDE\u63A5\u5728\u6C60\u4E2D\u6700\u5C0F\u751F\u5B58\u7684\u65F6\u95F4, \u5355\u4F4D\u662F\u6BEB\u79D2
+    minEvictableIdleTimeMillis: 30000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    # \u662F\u5426\u7F13\u5B58 preparedStatement, \u6253\u5F00 PSCache, \u5E76\u4E14\u6307\u5B9A\u6BCF\u4E2A\u8FDE\u63A5\u4E0A PSCache
+    # \u7684\u5927\u5C0F\u3002\u5B98\u65B9\u5EFA\u8BAEMySQL\u4E0B\u5EFA\u8BAE\u5173\u95ED, \u5982\u679C\u7528SQL\u9632\u706B\u5899 \u5EFA\u8BAE\u6253\u5F00
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    filters: stat, wall, slf4j
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+
+# mybatis
+mybatis:
+  type-aliases-package: com.hzlei.admin.model
+  mapper-locations: classpath:/mybatis-mappers/*
+  configuration:
+    map-underscore-to-camel-case: true
+
+api-url: /api

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hzlei.admin.dao.RoleUserDao">
+
+    <insert id="save">
+        insert into sys_role_user(userId, roleId)
+        values(#{userId}, #{roleId})
+    </insert>
+
+    <select id="getSysRoleUserByUserId" resultType="sysRoleUser">
+        select sru.userId, sru.roleId from sys_role_user sru
+        where sru.userId = #{userId}
+    </select>
+
+    <update id="updateSysRoleUser" parameterType="sysRoleUser">
+        update sys_role_user sru
+        <set>
+            <if test="roleId != null">sru.roleId = #{roleId}</if>
+        </set>
+        where sru.userId = #{userId}
+    </update>
+
+    <delete id="delRoleUserByUserId">
+        delete from sys_role_user sru
+        where sru.userId = #{userId}
+    </delete>
+
+</mapper>

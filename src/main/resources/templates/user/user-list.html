@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>SpringBoot权限管理-欢迎页面</title>
+		<header th:replace="header::html"></header>
+	</head>
+	<body>
+		<div class="x-nav">
+			<span class="layui-breadcrumb">
+				<a href="">首页</a>
+				<a href="">演示</a>
+				<a>
+					<cite>导航元素</cite></a>
+			</span>
+			<a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()"
+			 title="刷新">
+				<i class="layui-icon layui-icon-refresh" style="line-height:30px"></i></a>
+		</div>
+		<div class="layui-fluid">
+			<div class="layui-row layui-col-space15">
+				<div class="layui-col-md12">
+					<div class="layui-card">
+						<div class="layui-card-body ">
+							<form class="layui-form  layui-col-space5">
+								<div class="layui-inline layui-show-xs-block">
+									<input type="text" name="username" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+								</div>
+								<div class="layui-inline layui-show-xs-block">
+									<button class="layui-btn" lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+								</div>
+							</form>
+						</div>
+
+						<div class="layui-card-header">
+							<button class="layui-btn layui-btn-danger" onclick="delAll()" permission="sys:user:del"><i class="layui-icon"></i>批量删除
+							</button>
+							<button class="layui-btn" onclick="xadmin.open('添加用户','/user/add')" permission="sys:user:add"><i class="layui-icon"></i>添加
+							</button>
+						</div>
+
+						<div class="layui-card-body">
+							<table class="layui-hide" id="demo" lay-filter="member"></table>
+						</div>
+						<div class="layui-card-body">
+							<script type="text/html" id="barDemo">
+								<i class="layui-btn layui-btn-normal layui-btn-sm layui-icon" lay-event="edit">&#xe642;</i>
+                        		<i class="layui-btn layui-btn-danger layui-btn-sm layui-icon" lay-event="del">&#xe640;</i>
+                    		</script>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script>
+		layui.use('table', function() {
+			var table = layui.table,
+				form = layui.form;
+
+			//第一个实例
+			table.render({
+				elem: '#demo',
+				height: 350,
+				url: '/user/list' //数据接口
+					,
+				page: true //开启分页
+					,
+				response: {
+					dataName: 'datas' // 规定数据列表的字段名称, 默认为 data
+				},
+				cols: [
+					[ //表头
+						{
+							type: 'checkbox',
+							fixed: 'left'
+						}, {
+							field: 'id',
+							title: 'ID',
+							sort: true,
+							width: 70,
+							fixed: 'left',
+							align: 'center'
+						}, {
+							field: 'username',
+							title: '用户名',
+							align: 'center'
+						}, {
+							field: 'nickname',
+							title: '昵称',
+							align: 'center'
+						}, {
+							field: 'telephone',
+							title: '手机号',
+							align: 'center'
+						}, {
+							field: 'email',
+							title: '邮箱',
+							align: 'center'
+						}, {
+							field: 'status',
+							title: '状态',
+							align: 'center',
+							templet: function(d) {
+								return d.status == '1' ? '启动' : '禁用';
+							}
+						}, {
+							fixed: 'right',
+							title: '操作',
+							align: 'center',
+							toolbar: '#barDemo'
+						}
+					]
+				],
+				done: function() {
+					checkPermission();
+				}
+			});
+
+			//监听工具条
+			table.on('tool(member)', function(obj) {
+				var data = obj.data;
+				if (obj.event === 'del') {
+					layer.confirm('真的删除行么', function(index) {
+
+						$.ajax({
+							url: "/user/delete",
+							type: "GET",
+							data: {
+								id: data.id
+							},
+							dataType: 'json',
+							success: function(result) {
+								layer.alert("删除成功", {
+									icon: 1
+								}, function(index1) {
+									layer.close(index1);
+									// 刷新整个页面
+									//xadmin.father_reload();
+									// 刷新 table
+									table.reload('demo');
+								});
+							},
+						});
+
+					});
+				} else if (obj.event === 'edit') {
+					xadmin.open('编辑用户信息', '/user/updateUser?id=' + data.id);
+				}
+			});
+
+			//搜索
+			form.on('submit(search)', function(data) {
+				var username = data.field.username;
+				table.render({
+					elem: '#demo',
+					height: 350,
+					url: '/user/findUsersByUsername' //数据接口
+						,
+					page: true //开启分页
+						,
+					where: {
+						"username": username
+					},
+					response: {
+						// countName: 'count', //规定数据总数的字段名称，默认：count
+						dataName: 'datas' // 规定数据列表的字段名称, 默认为 data
+					},
+					cols: [
+						[ //表头
+							{
+								type: 'checkbox',
+								fixed: 'left'
+							}, {
+								field: 'id',
+								title: 'ID',
+								sort: true,
+								width: 70,
+								fixed: 'left',
+								align: 'center'
+							}, {
+								field: 'username',
+								title: '用户名',
+								align: 'center'
+							}, {
+								field: 'nickname',
+								title: '昵称',
+								align: 'center'
+							}, {
+								field: 'telephone',
+								title: '手机号',
+								align: 'center'
+							}, {
+								field: 'email',
+								title: '邮箱',
+								align: 'center'
+							}, {
+								field: 'status',
+								title: '状态',
+								align: 'center',
+								templet: function(d) {
+									return d.status == '1' ? '启动' : '禁用';
+								}
+							}, {
+								fixed: 'right',
+								title: '操作',
+								toolbar: '#barDemo',
+								align: 'center'
+							}
+						]
+					]
+				});
+				return false;
+			});
+			checkPermission();
+		});
+	</script>
+</html>

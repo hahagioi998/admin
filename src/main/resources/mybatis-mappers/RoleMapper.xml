@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hzlei.admin.dao.RoleDao">
+
+    <select id="getAllRoles" resultType="sysRole">
+        select sr.id, sr.name, sr.description, sr.createTime, sr.updateTime
+        from sys_role sr
+    </select>
+
+    <select id="getAllRoles2ByPage" resultType="sysRole">
+        select sr.id, sr.name, sr.description, sr.createTime, sr.updateTime
+        from sys_role sr
+        order by sr.id
+        limit #{offset}, #{limit}
+    </select>
+    <!-- 模糊查询 -->
+    <select id="findRoleByFuzzyRoleName" resultType="sysRole">
+        <bind name="name" value="'%' + name + '%'"/>
+        select sr.id, sr.name, sr.description, sr.createTime, sr.updateTime
+        from sys_role sr where sr.name like #{name}
+        limit #{offset}, #{limit}
+    </select>
+
+    <insert id="saveRole" parameterType="sysRole" flushCache="true" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_role(name, description, createTime, updateTime)
+        values(#{name}, #{description}, now(), now())
+    </insert>
+
+    <update id="update">
+        update sys_role sr
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="description != null">description = #{description},</if>
+            updateTime = #{updateTime}
+        </set>
+        where sr.id = #{id}
+    </update>
+
+</mapper>

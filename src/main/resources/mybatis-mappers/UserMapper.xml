@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hzlei.admin.dao.UserDao">
+
+    <!-- 获取用户 by id -->
+    <select id="getUserById" resultType="sysUser">
+        select su.id, su.username, su.password, su.nickname, su.headImgUrl, su.phone, su.telephone, su.email, su.birthday, su.sex, su.status, su.createTime, su.updateTime
+        from sys_user su
+        where su.id = #{id}
+    </select>
+
+    <!-- 获取用户 by username -->
+    <select id="getUserByUsername" resultType="sysUser">
+        select su.id, su.username, su.password, su.nickname, su.headImgUrl, su.phone, su.telephone, su.email, su.birthday, su.sex, su.status, su.createTime, su.updateTime
+        from sys_user su
+        where su.username = #{username}
+    </select>
+
+    <!-- 查询所有用户 -->
+    <select id="getAllUsersByPage" resultType="sysUser">
+        select su.id, su.username, su.password, su.nickname, su.headImgUrl, su.phone, su.telephone, su.email, su.birthday, su.sex, su.status, su.createTime, su.updateTime
+        from sys_user su
+        order by su.id
+        limit #{offset}, #{limit}
+    </select>
+    <!-- 模糊查询 -->
+    <select id="findUsersByUsername" resultType="sysUser">
+        <bind name="findUsername" value="'%' + username + '%'"/>
+        select su.id, su.username, su.password, su.nickname, su.headImgUrl, su.phone, su.telephone, su.email,
+        su.birthday, su.sex, su.status, su.createTime, su.updateTime
+        from sys_user su
+        where su.username like #{findUsername}
+        order by su.id
+        limit #{offset}, #{limit}
+    </select>
+
+    <!-- 更新用户信息 -->
+    <update id="updateUser" parameterType="sysUser">
+        update sys_user t
+        <set>
+            <if test="username != null">t.username = #{username},</if>
+            <if test="nickname != null">t.nickname = #{nickname},</if>
+            <if test="headImgUrl != null">t.headImgUrl = #{headImgUrl},</if>
+            <if test="phone != null">t.phone = #{phone},</if>
+            <if test="telephone != null">t.telephone = #{telephone},</if>
+            <if test="email != null">t.email = #{email},</if>
+            <if test="birthday != null">t.birthday = #{birthday},</if>
+            <if test="sex != null">t.sex = #{sex},</if>
+            <if test="status != null">t.status = #{status},</if>
+            t.updateTime = #{updateTime}
+        </set>
+        where t.id = #{id}
+    </update>
+
+    <select id="getUserByPhone" resultType="sysUser">
+        select su.id, su.username, su.password, su.nickname, su.headImgUrl, su.phone, su.telephone, su.email, su.birthday, su.sex, su.status, su.createTime, su.updateTime
+        from sys_user su
+        where su.telephone = #{telephone}
+    </select>
+
+</mapper>
